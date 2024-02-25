@@ -8,7 +8,7 @@
     <name>Woolly</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="woolly.llamaz.ing@gmail.com" url="https://wooly.llamaz.ing">LLaMazing</vendor>
+    <vendor email="woolly.llamaz.ing@gmail.com" url="https://woolly.llamaz.ing">LLaMazing</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
@@ -24,12 +24,12 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <projectConfigurable instance="ing.llamaz.woolly.ui.Settings" displayName="Wooly Settings"/>
+        <projectConfigurable instance="ing.llamaz.woolly.ui.Settings" displayName="Woolly Settings"/>
     </extensions>
 
     <actions>
-        <action id="ing.llamaz.woolly.actions.WoolifyAction" class="ing.llamaz.woolly.actions.WoolifyAction"
-                text="Woolify" description="Refactors selected code using AI" icon="AllIcons.Actions.SuggestedRefactoringBulb">
+        <action id="ing.llamaz.woolly.actions.WoollifyAction" class="ing.llamaz.woolly.actions.WoollifyAction"
+                text="Woollify" description="Generates or refactors code using AI" icon="AllIcons.Actions.RefactoringBulb">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
     </actions>
