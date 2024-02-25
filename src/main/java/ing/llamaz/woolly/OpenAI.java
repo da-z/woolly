@@ -15,8 +15,8 @@ public class OpenAI {
 
     private static final Logger log = LoggerFactory.getLogger(OpenAI.class);
 
-    public static final String DEFAULT_MODEL = "mistral:7b-instruct-v0.2-q8_0";
     public static final String DEFAULT_BASE_URL = "http://localhost:11434";
+    public static final String DEFAULT_MODEL = "mixtral:8x7b-instruct-v0.1-q8_0";
 
     private String model = DEFAULT_MODEL;
     private String baseUrl = DEFAULT_BASE_URL;
@@ -55,30 +55,32 @@ public class OpenAI {
     public String woolify(String context, String snippet, String language) {
 
         String sys = """
-                You are an AI plugin that writes or refactors %s code.
-                You respond directly with code and offer no other explanations.
-                You keep existing comments where possible.
+                You are an AI plugin that generates, fixes or simplifies %s code.
                 If the code is already simple and there is nothing more that can be done, reply with empty text.
                 When there are many variants to choose from, you choose the most appropriate response.
+                You reply with just the code. No other explanations are necessary.
                 """.formatted(language);
+
+        String user = snippet;
         if (context != null && !context.isBlank()) {
-            sys += """
+            user = """
+                For your reference, this is what the file currently looks like:
                 
-                Here is some context:
-                
-                ```%s
                 %s
-                ```
-                """.formatted(language, context);
+                
+                Now, please modify following piece of code to fit the context:
+                
+                %s
+                """.formatted(context, snippet);
         }
 
-        log.info(sys);
+        log.info("\nsys:\n\n{}\nuser:\n\n{}", sys, user);
 
         var chatRequest = ChatRequest.builder()
                 .model(this.model)
                 .messages(List.of(
                         new ChatMsgSystem(sys),
-                        new ChatMsgUser(snippet)))
+                        new ChatMsgUser(user)))
                 .temperature(.0)
                 .seed(0)
                 .build();
@@ -96,7 +98,7 @@ public class OpenAI {
         if (matcher.find()) {
             return matcher.group(1).trim();
         } else {
-            return text;
+            return null;
         }
     }
 

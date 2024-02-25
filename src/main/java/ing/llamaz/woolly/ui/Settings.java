@@ -26,6 +26,8 @@ public class Settings implements Configurable {
         JLabel modelLabel = new JLabel("Model:");
         modelTextField = new JTextField();
 
+        // add a slider field
+
         // Create layout
         GroupLayout layout = new GroupLayout(settingsPanel);
         settingsPanel.setLayout(layout);

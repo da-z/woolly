@@ -1,5 +1,4 @@
 import ing.llamaz.woolly.OpenAI;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -7,24 +6,22 @@ import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 
 public class TestActions {
 
-    @Before
-    public void before() {
-        OpenAI.getInstance().setModel("mistral:7b-instruct-v0.2-q8_0");
-    }
-
     @Test
-    public void testRefactor() {
+    public void testWoolify() {
         assertThat(
-                OpenAI.getInstance().woolify("", """
-                        for (int i = 1; i <= 6; i++) {
-                            // Press Ctrl+D to start debugging your code. We have set one breakpoint
-                            // for you, but you can always add more by pressing Cmd+F8.
-                            System.out.println("i = " + i);
-                        }""", "java"),
+                OpenAI.getInstance().woolify("""
+                                // some other Java code
+                                System.out.println("Hello");
+                                """,
+                        """
+                                for (int i = 1; i <= 6; i++) {
+                                    // Press Ctrl+D to start debugging your code. We have set one breakpoint
+                                    // for you, but you can always add more by pressing Cmd+F8.
+                                    System.out.println("i = " + i);
+                                }""", "java"),
                 equalToIgnoringWhiteSpace("""
                         for (int i = 1; i <= 6; i++) {
-                            System.out.print("i = " + i);
-                            System.out.println();
+                            System.out.println("i = " + i);
                         }
                         """));
 
@@ -39,7 +36,9 @@ public class TestActions {
                         System.out.println(6);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        for (int i = 1; i <= 6; i++) { System.out.println(i); }
+                        for (int i = 1; i <= 6; i++) {
+                            System.out.println(i);
+                        }
                         """));
 
         assertThat(
@@ -51,7 +50,8 @@ public class TestActions {
                         System.out.println("Sum is: " + sum);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Your code looks good and simple. No refactoring needed. // Empty text.
+                        int sum = IntStream.rangeClosed(1, 5).sum();
+                        System.out.println("Sum is: " + sum);
                         """));
     }
 

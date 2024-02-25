@@ -22,7 +22,6 @@ public class WoolifyAction extends BaseAction {
 
         // send selection
         if (snippet != null && context != null) {
-            context = context.replace(snippet, "<<< code will be inserted here >>>");
             String newText = OpenAI.getInstance().woolify(context, snippet, getLanguage(e.getProject()));
             if (newText != null) {
                 replaceSelectedText(e, newText);
