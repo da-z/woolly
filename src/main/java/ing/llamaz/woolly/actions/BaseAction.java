@@ -3,6 +3,8 @@ package ing.llamaz.woolly.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -10,6 +12,9 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
@@ -19,6 +24,8 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public abstract class BaseAction extends AnAction {
 
@@ -122,4 +129,25 @@ public abstract class BaseAction extends AnAction {
         }
     }
 
+    protected void runInBackground(Project project, String title, Callable<String> c, Consumer<String> fn) {
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
+            Application application = ApplicationManager.getApplication();
+            ProgressManager.getInstance().run(new Task.Modal(project, title, false) {
+                @Override
+                public void run(ProgressIndicator indicator) {
+                    indicator.setIndeterminate(true);
+                    try {
+                        String res = c.call();
+                        application.invokeLater(() -> {
+                            WriteCommandAction.runWriteCommandAction(project, () -> {
+                                fn.accept(res);
+                            });
+                        });
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }, title, true, project);
+    }
 }
