@@ -5,6 +5,7 @@ import io.github.sashirestela.openai.SimpleOpenAI;
 import io.github.sashirestela.openai.domain.chat.ChatRequest;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsgSystem;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsgUser;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,13 +19,18 @@ public class OpenAI {
 
     private static final Logger log = LoggerFactory.getLogger(OpenAI.class);
 
-    private String baseUrl = PropertiesComponent.getInstance().getValue(BASE_URL_KEY, "http://localhost:11434");
-    private String model = PropertiesComponent.getInstance().getValue(MODEL_KEY, "mixtral");
-    private String apiKey = PropertiesComponent.getInstance().getValue(API_KEY, "");
+    private String baseUrl = getProperty(BASE_URL_KEY, "http://localhost:11434");
+    private String model = getProperty(MODEL_KEY, "mixtral");
+    private String apiKey = getProperty(API_KEY, "");
 
     private SimpleOpenAI openai;
 
-    private OpenAI() {
+    protected OpenAI() {
+    }
+
+    @NotNull
+    protected String getProperty(String key, String defaultValue) {
+        return PropertiesComponent.getInstance().getValue(key, defaultValue);
     }
 
     private static final class InstanceHolder {
@@ -71,22 +77,40 @@ public class OpenAI {
     public String woolify(String context, String snippet, String language) {
 
         String sys = """
-                You are an AI plugin that generates, fixes or simplifies %s code.
-                If the code is already simple and there is nothing more that can be done, reply with empty text.
+                You are an AI plugin that generates, fixes, simplifies or documents %s code.
+                If the piece of code with instructions, do do what the comment says.
                 When there are many variants to choose from, you choose the most appropriate response.
-                You reply with just the code. No other explanations are necessary.
+                You ALWAYS wrap comments or code inside Markdown ``` code fences.
+                If you need to simplify and the code is already simple, reply with empty text.
+                You comment code sparingly.
+                You do not comment code unless code is not evident what it does.
+                You do not re-write comments unless they contain errors or spelling mistakes.
+                You do not offer explanations for your code decisions.
+                You respond succinctly.
                 """.formatted(language);
 
         String user = snippet;
         if (context != null && !context.isBlank()) {
             user = """
-                For your reference, this is what the file currently looks like:
+                Given context:
                 
+                ### BEGIN ###
                 %s
+                ### END ###
                 
-                Now, please modify following piece of code to fit the context:
+                Do not repeat or duplicate chunks of text from context unnecessarily.
                 
+                Please update just the following portion of the text strictly as follows:
+                
+                    - Either write code or documentation but never both at the same time.
+                    - If the text is a template of javadoc, jsdoc, or similar comment block then fill-in documentation.
+                    - If the text is code, you fill-in, refactor or simplify it.
+                    - If the text below contains instructions, try to follow them, including generating code.
+                
+                ### BEGIN ###
                 %s
+                ### END ###
+                
                 """.formatted(context, snippet);
         }
 
@@ -107,7 +131,7 @@ public class OpenAI {
         return extractCodeBlock(response);
     }
 
-    static Pattern codeBlockPattern = Pattern.compile("```.*?\n(.*?)```", Pattern.DOTALL);
+    static Pattern codeBlockPattern = Pattern.compile("```[a-zA-Z0-9\\-]*?[\n|\\s](.*?)```", Pattern.DOTALL);
 
     public static String extractCodeBlock(String text) {
         Matcher matcher = codeBlockPattern.matcher(text);

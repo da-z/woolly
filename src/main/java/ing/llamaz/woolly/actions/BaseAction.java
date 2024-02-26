@@ -3,8 +3,6 @@ package ing.llamaz.woolly.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.application.Application;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -131,28 +129,16 @@ public abstract class BaseAction extends AnAction {
 
     protected void runInBackground(Project project, String title, Callable<String> c, Consumer<String> fn) {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
-            Application application = ApplicationManager.getApplication();
             ProgressManager.getInstance().run(new Task.Modal(project, title, true) {
                 @Override
-                public void run(ProgressIndicator indicator) {
+                public void run(@NotNull ProgressIndicator indicator) {
                     indicator.setIndeterminate(true);
                     indicator.setText("Processing...");
-                    if (indicator.isCanceled()) {
-                        return;
-                    }
                     try {
                         String res = c.call();
-                        if (indicator.isCanceled()) {
-                            return;
+                        if (!indicator.isCanceled()) {
+                            WriteCommandAction.runWriteCommandAction(project, () -> fn.accept(res));
                         }
-                        application.invokeLater(() -> {
-                            // Check for cancellation before executing the result
-                            if (!indicator.isCanceled()) {
-                                WriteCommandAction.runWriteCommandAction(project, () -> {
-                                    fn.accept(res);
-                                });
-                            }
-                        });
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -160,7 +146,5 @@ public abstract class BaseAction extends AnAction {
             });
         }, title, true, project);
     }
-
-
 
 }

@@ -1,4 +1,6 @@
 import ing.llamaz.woolly.OpenAI;
+import ing.llamaz.woolly.ui.Settings;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -8,26 +10,85 @@ public class TestActions {
 
     @Test
     public void testWoolify() {
+
+        OpenAI openai = new OpenAI() {
+            @Override
+            protected @NotNull String getProperty(String key, String defaultValue) {
+                if (key.equals(Settings.MODEL_KEY)) {
+                    return "mistral";
+                }
+                return defaultValue;
+            }
+        };
+
         assertThat(
-                OpenAI.getInstance().woolify("""
-                                // some other Java code
-                                System.out.println("Hello");
-                                """,
-                        """
-                                for (int i = 1; i <= 6; i++) {
-                                    // Press Ctrl+D to start debugging your code. We have set one breakpoint
-                                    // for you, but you can always add more by pressing Cmd+F8.
-                                    System.out.println("i = " + i);
-                                }""", "java"),
+                openai.woolify("""
+                        public class Main {
+                            /**
+                             *
+                             * @param word
+                             * @return
+                             */
+                            public static boolean isPalindrome(String word) {
+                                int left = 0;
+                                int right = word.length() - 1;
+                                
+                                while (left < right) {
+                                    if (word.charAt(left++) != word.charAt(right--)) {
+                                        return false;
+                                    }
+                                }
+                                
+                                return true;
+                            }
+                                                
+                            public static void main(String[] args) {
+                                String test = "abba";
+                                System.out.println("Is \\"" + test + "\\" a palindrome? " + isPalindrome(test));
+                            }
+                        }
+                        """, """
+                        /**
+                         *
+                         * @param word
+                         * @return
+                         */
+                        """, "java"),
                 equalToIgnoringWhiteSpace("""
+                        /**
+                         * Checks if a given string is a palindrome. A palindrome is a string that reads the same backward as forward.
+                         *
+                         * @param word the string to check for palindromic property
+                         * @return true if the string is a palindrome, false otherwise
+                         */
+                        """)
+        );
+
+        assertThat(
+                openai.woolify("""
+                        // some other Java code
+                        System.out.println("Hello");
+                                                
+                        for (int i = 1; i <= 6; i++) {
+                            // Press Ctrl+D to start debugging your code. We have set one breakpoint
+                            // for you, but you can always add more by pressing Cmd+F8.
+                            System.out.println("i = " + i);
+                        """, """
+                        for (int i = 1; i <= 6; i++) {
+                            // Press Ctrl+D to start debugging your code. We have set one breakpoint
+                            // for you, but you can always add more by pressing Cmd+F8.
+                            System.out.println("i = " + i);
+                        }""", "java"),
+                equalToIgnoringWhiteSpace("""
+                        // Press Ctrl+D to start debugging your code. We have set one breakpoint for you,
+                        // but you can always add more by pressing Cmd+F8.
                         for (int i = 1; i <= 6; i++) {
                             System.out.println("i = " + i);
                         }
                         """));
 
-
         assertThat(
-                OpenAI.getInstance().woolify("", """
+                openai.woolify("", """
                         System.out.println(1);
                         System.out.println(2);
                         System.out.println(3);
@@ -36,13 +97,14 @@ public class TestActions {
                         System.out.println(6);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
+                        // prints numbers from 1 to 6
                         for (int i = 1; i <= 6; i++) {
                             System.out.println(i);
                         }
                         """));
 
         assertThat(
-                OpenAI.getInstance().woolify("", """
+                openai.woolify("", """
                         int sum = 0;
                         for (int i = 1; i <= 5; i++) {
                             sum += i;
@@ -50,9 +112,14 @@ public class TestActions {
                         System.out.println("Sum is: " + sum);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        int sum = IntStream.rangeClosed(1, 5).sum();
+                        // Calculate the sum of numbers from 1 to 5
+                        int sum = 0;
+                        for (int i = 1; i <= 5; i++) {
+                            sum += i;
+                        }
                         System.out.println("Sum is: " + sum);
                         """));
+
     }
 
 }
