@@ -5,14 +5,22 @@ plugins {
 }
 
 group = "ing.llamaz"
-version = "0.5.3"
+version = "0.5.5"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("io.github.sashirestela:simple-openai:2.0.0")
+    implementation("io.github.sashirestela:simple-openai:2.0.0") {
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-annotations")
+        exclude(group = "com.fasterxml.jackson.core", module = "jackson-databind")
+    }
+    implementation("com.fasterxml.jackson.core:jackson-core:2.14.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.3")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.14.3")
+
     testImplementation("org.hamcrest:hamcrest-all:1.3")
 }
 
