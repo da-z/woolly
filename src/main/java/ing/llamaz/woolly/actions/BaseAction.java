@@ -127,7 +127,7 @@ public abstract class BaseAction extends AnAction {
         }
     }
 
-    protected void runInBackground(Project project, String title, Callable<String> c, Consumer<String> fn) {
+    protected void runInBackground(Project project, String title, Callable<String> callable, Consumer<String> consumer) {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
             ProgressManager.getInstance().run(new Task.Modal(project, title, true) {
                 @Override
@@ -135,9 +135,9 @@ public abstract class BaseAction extends AnAction {
                     indicator.setIndeterminate(true);
                     indicator.setText("Processing...");
                     try {
-                        String res = c.call();
+                        String result = callable.call();
                         if (!indicator.isCanceled()) {
-                            WriteCommandAction.runWriteCommandAction(project, () -> fn.accept(res));
+                            WriteCommandAction.runWriteCommandAction(project, () -> consumer.accept(result));
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
