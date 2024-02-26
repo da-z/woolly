@@ -1,5 +1,6 @@
 package ing.llamaz.woolly;
 
+import com.intellij.ide.util.PropertiesComponent;
 import io.github.sashirestela.openai.SimpleOpenAI;
 import io.github.sashirestela.openai.domain.chat.ChatRequest;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsgSystem;
@@ -11,31 +12,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ing.llamaz.woolly.ui.Settings.*;
+
 public class OpenAI {
 
     private static final Logger log = LoggerFactory.getLogger(OpenAI.class);
 
-    public static final String DEFAULT_BASE_URL = "http://localhost:11434";
-    public static final String DEFAULT_MODEL = "mixtral:8x7b-instruct-v0.1-q8_0";
+    private String baseUrl = PropertiesComponent.getInstance().getValue(BASE_URL_KEY, "http://localhost:11434");
+    private String model = PropertiesComponent.getInstance().getValue(MODEL_KEY, "mixtral");
+    private String apiKey = PropertiesComponent.getInstance().getValue(API_KEY, "");
 
-    private String model = DEFAULT_MODEL;
-    private String baseUrl = DEFAULT_BASE_URL;
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
+    private SimpleOpenAI openai;
 
     private OpenAI() {
     }
@@ -49,7 +36,36 @@ public class OpenAI {
     }
 
     private SimpleOpenAI getClient() {
-        return SimpleOpenAI.builder().baseUrl(this.baseUrl).apiKey("dummy").build();
+        if (openai == null) {
+            openai = SimpleOpenAI.builder().baseUrl(this.baseUrl).apiKey(apiKey).build();
+        }
+        return openai;
+    }
+
+    public String getModel() {
+        return model;
+    }
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+        this.openai = null;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+        this.openai = null;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+        this.openai = null;
     }
 
     public String woolify(String context, String snippet, String language) {

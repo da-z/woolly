@@ -10,23 +10,26 @@ import javax.swing.*;
 
 public class Settings implements Configurable {
 
-    private static final String BASE_URL_KEY = "ing.llamaz.woolly.settings.baseUrl";
-    private static final String MODEL_KEY = "ing.llamaz.woolly.settings.model";
+    public static final String BASE_URL_KEY = "ing.llamaz.woolly.settings.baseUrl";
+    public static final String API_KEY = "ing.llamaz.woolly.settings.apiKey";
+    public static final String MODEL_KEY = "ing.llamaz.woolly.settings.model";
 
     private final JPanel settingsPanel;
-    private final JTextField baseUrlTextField;
-    private final JTextField modelTextField;
+    private final JTextField baseUrlField;
+    private final JPasswordField apiKeyField;
+    private final JTextField modelField;
 
     public Settings() {
         settingsPanel = new JPanel();
 
         JLabel baseUrlLabel = new JLabel("Base URL:");
-        baseUrlTextField = new JTextField();
+        baseUrlField = new JTextField();
+
+        JLabel apiKeyLabel = new JLabel("API Key (optional):");
+        apiKeyField = new JPasswordField();
 
         JLabel modelLabel = new JLabel("Model:");
-        modelTextField = new JTextField();
-
-        // add a slider field
+        modelField = new JTextField();
 
         // Create layout
         GroupLayout layout = new GroupLayout(settingsPanel);
@@ -38,19 +41,25 @@ public class Settings implements Configurable {
         layout.setHorizontalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                         .addComponent(baseUrlLabel)
+                        .addComponent(apiKeyLabel)
                         .addComponent(modelLabel))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(baseUrlTextField)
-                        .addComponent(modelTextField)));
+                        .addComponent(baseUrlField)
+                        .addComponent(apiKeyField)
+                        .addComponent(modelField)));
 
         // Set vertical alignment
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(baseUrlLabel)
-                        .addComponent(baseUrlTextField))
+                        .addComponent(baseUrlField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(apiKeyLabel)
+                        .addComponent(apiKeyField))  // Added apiKeyPasswordField here
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(modelLabel)
-                        .addComponent(modelTextField)));
+                        .addComponent(modelField)));
+
     }
 
     @Nls
@@ -67,20 +76,23 @@ public class Settings implements Configurable {
 
     @Override
     public boolean isModified() {
-        return !baseUrlTextField.getText().equals(getBaseUrl())
-                || !modelTextField.getText().equals(getModel());
+        return !baseUrlField.getText().equals(getBaseUrl())
+                || !new String(apiKeyField.getPassword()).equals(getApiKey())
+                || !modelField.getText().equals(getModel());
     }
 
     @Override
     public void apply() {
-        setBaseUrl(baseUrlTextField.getText());
-        setModel(modelTextField.getText());
+        setBaseUrl(baseUrlField.getText());
+        setApiKey(new String(apiKeyField.getPassword()));
+        setModel(modelField.getText());
     }
 
     @Override
     public void reset() {
-        baseUrlTextField.setText(getBaseUrl());
-        modelTextField.setText(getModel());
+        baseUrlField.setText(getBaseUrl());
+        apiKeyField.setText(getApiKey());
+        modelField.setText(getModel());
     }
 
     private String getBaseUrl() {
@@ -92,6 +104,15 @@ public class Settings implements Configurable {
         OpenAI.getInstance().setBaseUrl(baseUrl);
     }
 
+    private String getApiKey() {
+        return PropertiesComponent.getInstance().getValue(API_KEY, OpenAI.getInstance().getApiKey());
+    }
+
+    private void setApiKey(String apiKey) {
+        PropertiesComponent.getInstance().setValue(API_KEY, apiKey);
+        OpenAI.getInstance().setApiKey(apiKey);
+    }
+
     private String getModel() {
         return PropertiesComponent.getInstance().getValue(MODEL_KEY, OpenAI.getInstance().getModel());
     }
@@ -100,4 +121,5 @@ public class Settings implements Configurable {
         PropertiesComponent.getInstance().setValue(MODEL_KEY, model);
         OpenAI.getInstance().setModel(model);
     }
+
 }
