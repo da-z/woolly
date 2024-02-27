@@ -1,5 +1,7 @@
 # Woolly
 
+<img height="128" src="src/main/resources/META-INF/pluginIcon.svg" width="128"/>
+
 <p>Woolly is a simple Code Generation IntelliJ plugin that leverages Large Language Models (LLMs) to seamlessly generate,
     refactor, or simplify code.</p>
 
