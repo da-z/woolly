@@ -1,5 +1,4 @@
 import ing.llamaz.woolly.OpenAI;
-import ing.llamaz.woolly.ui.Settings;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -14,9 +13,6 @@ public class TestActions {
         OpenAI openai = new OpenAI() {
             @Override
             protected @NotNull String getProperty(String key, String defaultValue) {
-                if (key.equals(Settings.MODEL_KEY)) {
-                    return "mistral";
-                }
                 return defaultValue;
             }
         };
@@ -56,10 +52,11 @@ public class TestActions {
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
                         /**
-                         * Checks if a given string is a palindrome. A palindrome is a string that reads the same backward as forward.
+                         * Checks if the given word is a palindrome.
+                         * A palindrome is a word that reads the same backward as forward.
                          *
-                         * @param word the string to check for palindromic property
-                         * @return true if the string is a palindrome, false otherwise
+                         * @param word The word to check for palindrome property
+                         * @return True if the word is a palindrome, false otherwise
                          */
                         """)
         );
@@ -80,8 +77,7 @@ public class TestActions {
                             System.out.println("i = " + i);
                         }""", "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Press Ctrl+D to start debugging your code. We have set one breakpoint for you,
-                        // but you can always add more by pressing Cmd+F8.
+                        // Prints numbers from 1 to 6
                         for (int i = 1; i <= 6; i++) {
                             System.out.println("i = " + i);
                         }
@@ -97,11 +93,10 @@ public class TestActions {
                         System.out.println(6);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        // prints numbers from 1 to 6
-                        for (int i = 1; i <= 6; i++) {
-                            System.out.println(i);
-                        }
-                        """));
+                       for (int i = 1; i <= 6; i++) {
+                           System.out.println(i);
+                       }
+                       """));
 
         assertThat(
                 openai.woolify("", """
@@ -112,7 +107,6 @@ public class TestActions {
                         System.out.println("Sum is: " + sum);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Calculate the sum of numbers from 1 to 5
                         int sum = 0;
                         for (int i = 1; i <= 5; i++) {
                             sum += i;
