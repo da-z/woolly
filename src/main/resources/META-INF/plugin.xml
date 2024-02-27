@@ -69,7 +69,7 @@
 
     <actions>
         <action id="ing.llamaz.woolly.actions.WoollifyAction" class="ing.llamaz.woolly.actions.WoollifyAction"
-                text="Woollify" description="Generates or refactors code using AI" icon="AllIcons.Actions.RefactoringBulb">
+                text="Woollify" description="Generates or refactors code using AI" icon="ing.llamaz.woolly.ui.Icons.Woolly">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
     </actions>
