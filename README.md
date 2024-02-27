@@ -1,6 +1,6 @@
 # Woolly
 
-<p>Woolly is a simple Code Generation plugin that leverages Large Language Models (LLMs) to seamlessly generate,
+<p>Woolly is a simple Code Generation IntelliJ plugin that leverages Large Language Models (LLMs) to seamlessly generate,
     refactor, or simplify code.</p>
 
 <h3>Key Features:</h3>
