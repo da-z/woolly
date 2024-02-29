@@ -20,6 +20,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -28,45 +29,38 @@ import java.util.function.Consumer;
 public abstract class BaseAction extends AnAction {
 
     String getLanguage(Project project) {
-        TextEditor textEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
-
-        if (textEditor == null) {
-            return null;
-        }
-
-        VirtualFile virtualFile = textEditor.getFile();
-        if (virtualFile == null) {
-            return null;
-        }
-
-        PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
-        if (psiFile == null) {
-            return null;
-        }
+        PsiFile psiFile = getPsiFile(project);
+        if (psiFile == null) return null;
 
         return psiFile.getLanguage().getDisplayName();
     }
 
-    String getFileContent(Project project) {
-        TextEditor textEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
-
-        if (textEditor == null) {
+    @Nullable
+    private static PsiFile getPsiFile(Project project) {
+        VirtualFile virtualFile = getVirtualFile(project);
+        if (virtualFile == null) {
             return null;
         }
 
-        VirtualFile virtualFile = textEditor.getFile();
+        return PsiManager.getInstance(project).findFile(virtualFile);
+    }
+
+    String getFileContent(Project project) {
+        Document document = getDocument(project);
+        if (document == null) return null;
+
+        return document.getText();
+    }
+
+    @Nullable
+    private static Document getDocument(Project project) {
+        VirtualFile virtualFile = getVirtualFile(project);
         if (virtualFile == null) {
             return null;
         }
 
         FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
-        Document document = fileDocumentManager.getDocument(virtualFile);
-
-        if (document != null) {
-            return document.getText();
-        }
-
-        return null;
+        return fileDocumentManager.getDocument(virtualFile);
     }
 
     static String getSelectedText(@NotNull AnActionEvent e) {
@@ -99,16 +93,8 @@ public abstract class BaseAction extends AnAction {
     }
 
     public void replaceFileContent(Project project, String newContent) {
-        TextEditor textEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
-
-        if (textEditor == null) {
-            return;
-        }
-
-        VirtualFile virtualFile = textEditor.getFile();
-        if (virtualFile == null) {
-            return;
-        }
+        VirtualFile virtualFile = getVirtualFile(project);
+        if (virtualFile == null) return;
 
         WriteCommandAction.runWriteCommandAction(project, () -> {
             Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
@@ -116,6 +102,16 @@ public abstract class BaseAction extends AnAction {
                 document.setText(newContent);
             }
         });
+    }
+
+    @Nullable
+    private static VirtualFile getVirtualFile(Project project) {
+        TextEditor textEditor = (TextEditor) FileEditorManager.getInstance(project).getSelectedEditor();
+        if (textEditor == null) {
+            return null;
+        }
+
+        return textEditor.getFile();
     }
 
     private static void reformatSelectedText(Project project, Editor editor) {

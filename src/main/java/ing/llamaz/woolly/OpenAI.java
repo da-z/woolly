@@ -77,21 +77,20 @@ public class OpenAI {
     public String woolify(String context, String snippet, String language) {
 
         String sys = """
-                You are an AI plugin that generates, fixes, simplifies or documents %s code.
-                If the piece of code with instructions, do do what the comment says.
+                You are an AI plugin that generates, fixes, simplifies, documents or explains %s code.
+                If the piece of code contains instructions, do what the comment says.
                 When there are many variants to choose from, you choose the most appropriate response.
                 You ALWAYS wrap your response in triple backticks ```.
+                If your response is not code, write it as code comment(s).
                 If you need to simplify and the code is already simple, reply with empty text.
                 You comment code sparingly.
-                You do not comment code unless code is not evident what it does.
+                You only add comments to code when it's necessary for understanding its purpose or behavior.
                 You do not re-write comments unless they contain errors or spelling mistakes.
                 You do not offer explanations for your code decisions.
                 You respond succinctly.
                 """.formatted(language);
 
-        String user = snippet;
-        if (context != null && !context.isBlank()) {
-            user = """
+        String user = """
                 Given context:
                 
                 ### BEGIN ###
@@ -105,13 +104,13 @@ public class OpenAI {
                     - If the text is code, you fill-in, refactor or simplify it.
                     - If the text contains instructions, try to follow them, including generating code.
                     - If the text is a method or function, you reply with method or function, not the whole file or class context.
+                    - When writing class documentation reply with just the documentation header, not the whole file or class.
                 
                 ### BEGIN ###
                 %s
                 ### END ###
                 
                 """.formatted(context, snippet);
-        }
 
         log.info("\nsys:\n\n{}\nuser:\n\n{}", sys, user);
 
@@ -127,18 +126,31 @@ public class OpenAI {
         String response = getClient().chatCompletions().create(chatRequest).join().firstContent();
         log.info(response);
 
-        return extractCodeBlock(response);
+        return extract(response);
     }
 
+    static Pattern fileBlockPattern = Pattern.compile("### BEGIN ###[\n|\\s](.*?)### END ###", Pattern.DOTALL);
     static Pattern codeBlockPattern = Pattern.compile("```[a-zA-Z0-9\\-]*?[\n|\\s](.*?)```", Pattern.DOTALL);
+    static Pattern snippetBlockPattern = Pattern.compile("`(.*?)`", Pattern.DOTALL);
 
-    public static String extractCodeBlock(String text) {
-        Matcher matcher = codeBlockPattern.matcher(text);
+    private static String extract(Pattern pattern, String text) {
+        Matcher matcher = pattern.matcher(text);
         if (matcher.find()) {
-            return matcher.group(1).trim();
-        } else {
-            return null;
+            return matcher.group(1);
         }
+        return null;
+    }
+
+    public static String extract(String text) {
+        String res = extract(fileBlockPattern, text);
+        if (res != null) {
+            return res;
+        }
+        res = extract(codeBlockPattern, text);
+        if (res != null) {
+            return res;
+        }
+        return extract(snippetBlockPattern, text);
     }
 
 }
