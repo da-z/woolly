@@ -6,6 +6,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 public class TestActions {
 
@@ -71,7 +72,7 @@ public class TestActions {
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
                         /**
-                         * This class provides methods to interact with OpenAI's API for text summarization and code generation.
+                         * This class provides functionality to interact with OpenAI's API for text summarization and code extraction.
                          */
                         """)
         );
@@ -118,7 +119,7 @@ public class TestActions {
                          * Checks if a given word is a palindrome.
                          * A palindrome is a word that reads the same backward as forward.
                          *
-                         * @param word The word to check for palindrome property.
+                         * @param word The word to check for palindromeness.
                          * @return True if the given word is a palindrome, false otherwise.
                          */
                         """)
@@ -144,7 +145,7 @@ public class TestActions {
                             System.out.println("i = " + i);
                         }""", "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Prints numbers from 1 to 6
+                        // Print numbers from 1 to 6
                         for (int i = 1; i <= 6; i++) {
                             System.out.println("i = " + i);
                         }
@@ -181,7 +182,7 @@ public class TestActions {
                         System.out.println("Sum is: " + sum);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Calculates the sum of numbers from 1 to 5
+                        // Computes the sum of numbers from 1 to 5
                         int sum = 0;
                         for (int i = 1; i <= 5; i++) {
                             sum += i;
@@ -200,6 +201,8 @@ public class TestActions {
         assertThat(OpenAI.extract("``` hola```"), equalTo("hola"));
         assertThat(OpenAI.extract("``` hola"), equalTo("hola"));
         assertThat(OpenAI.extract("` hola`"), equalTo("hola"));
+        assertThat(OpenAI.extract(" hola "), equalTo("hola"));
+        assertThat(OpenAI.extract(" "), isEmptyOrNullString());
     }
 
 }

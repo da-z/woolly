@@ -80,7 +80,6 @@ public class OpenAI {
                 You are an AI plugin that generates, fixes, simplifies, documents or explains %s code.
                 If the piece of code contains instructions, do what the comment says.
                 When there are many variants to choose from, you choose the most appropriate response.
-                You ALWAYS wrap your response in triple backticks ```.
                 If your response is not code, write it as code comment(s).
                 If you need to simplify and the code is already simple, reply with empty text.
                 You comment code sparingly.
@@ -88,6 +87,8 @@ public class OpenAI {
                 You do not re-write comments unless they contain errors or spelling mistakes.
                 You do not offer explanations for your code decisions.
                 You respond succinctly.
+                Your response is always formatted as either code or comment blocks in the same language you were given.
+                You ALWAYS wrap your response in Markdown fenced code blocks.
                 """.formatted(language);
 
         String user = """
@@ -162,7 +163,7 @@ public class OpenAI {
                 return matcher.group(1).trim();
             }
         }
-        return null;
+        return text == null ? null : text.isBlank() ? null : text.trim();
     }
 
 }
