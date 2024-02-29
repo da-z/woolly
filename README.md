@@ -2,43 +2,32 @@
 
 <img height="128" src="src/main/resources/META-INF/pluginIcon.svg" width="128"/>
 
-<p>Woolly is a simple Code Generation IntelliJ plugin that leverages Large Language Models (LLMs) to seamlessly generate,
-    refactor, or simplify code.</p>
+[Woolly](https://plugins.jetbrains.com/plugin/23836-woolly?noRedirect=true) is a simple Code Generation IntelliJ plugin that utilizes Large Language Models (LLMs) to generate, refactor, or
+simplify code.
 
-<h3>Key Features:</h3>
+### Key Features:
 
-<ul>
-    <li>
-        <strong>Code Refactoring:</strong>
-        <ul>
-            <li>The plugin excels in refactoring code to improve readability, maintainability, and overall code
-                quality.</li>
-            <li>It intelligently analyzes the provided code snippets and suggests optimized versions, eliminating
-                redundancies and enhancing efficiency.</li>
-        </ul>
-    </li>
-    <li>
-        <strong>Code Generation:</strong>
-        <ul>
-            <li>Generate new code tailored to your specifications.</li>
-        </ul>
-    </li>
-</ul>
+- **Code Refactoring:**
 
-<h3>Set-Up:</h3>
+    - The plugin excels in refactoring code for improved readability, maintainability, and overall code quality.
+    - It intelligently analyzes provided code snippets and suggests optimized versions, eliminating redundancies and
+      enhancing efficiency.
 
-<p>Go to <strong>Settings</strong> &gt; <strong>Other Settings</strong> &gt; <strong>Woolly Settings</strong> and configure the URL for the LLM you would like to use,
-    the model, and optionally, your API key.</p>
+- **Code Generation:**
 
-<p>If using Ollama, you need to pull a model (<a href="https://ollama.com/library" target="_blank">https://ollama.com/library</a>)
-    before using it in the plugin.</p>
+    - Generate new code tailored to your specifications.
 
-<h3>Usage:</h3>
+### Set-Up:
 
-<p>Select a piece of text, right-click, and choose the magic Woollify action. In its default form, the action will
-    try to simplify/refactor the code. However, it can also generate code. You can instruct it via comments. Feel
-    free to experiment.</p>
+1. Go to **Settings** > **Other Settings** > **Woolly Settings** and configure the URL for the desired LLM, model, and
+   optionally, your API key.
+2. If using Ollama, pull a model (<a href="https://ollama.com/library" target="_blank">https://ollama.com/library</a>)
+   before using it in the plugin.
 
-<p>If you are not satisfied with the result, you can always Undo the changes.</p>
+### Usage:
 
-<p>Have fun!</p>
+1. Select a piece of text, right-click, and choose the magic **Woollify** action. Its default form will attempt to simplify
+   or refactor the code.
+2. Generate code by instructing the plugin via comments. Feel free to experiment.
+3. If not satisfied with the result, undo the changes.
+4. Enjoy!
