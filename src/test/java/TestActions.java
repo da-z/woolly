@@ -1,7 +1,9 @@
 import ing.llamaz.woolly.OpenAI;
+import ing.llamaz.woolly.actions.BaseAction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 
@@ -69,7 +71,7 @@ public class TestActions {
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
                         /**
-                         * This class provides functionality to interact with OpenAI's API for text summarization and code generation.
+                         * This class provides methods to interact with OpenAI's API for text summarization and code generation.
                          */
                         """)
         );
@@ -142,7 +144,7 @@ public class TestActions {
                             System.out.println("i = " + i);
                         }""", "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Prints the numbers 1 to 6
+                        // Prints numbers from 1 to 6
                         for (int i = 1; i <= 6; i++) {
                             System.out.println("i = " + i);
                         }
@@ -179,13 +181,25 @@ public class TestActions {
                         System.out.println("Sum is: " + sum);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Computes the sum of numbers from 1 to 5
+                        // Calculates the sum of numbers from 1 to 5
                         int sum = 0;
                         for (int i = 1; i <= 5; i++) {
                             sum += i;
                         }
                         System.out.println("Sum is: " + sum);
                         """));
+    }
+
+    @Test
+    public void test6() {
+        assertThat(OpenAI.extract("### BEGIN ###hola### END ###"), equalTo("hola"));
+        assertThat(OpenAI.extract("### BEGIN ### \n hola \n ### END ###"), equalTo("hola"));
+        assertThat(OpenAI.extract("### BEGIN ###```go hola ```### END ###"), equalTo("```go hola ```"));
+        assertThat(OpenAI.extract("```go hola```"), equalTo("hola"));
+        assertThat(OpenAI.extract("```go hola"), equalTo("hola"));
+        assertThat(OpenAI.extract("``` hola```"), equalTo("hola"));
+        assertThat(OpenAI.extract("``` hola"), equalTo("hola"));
+        assertThat(OpenAI.extract("` hola`"), equalTo("hola"));
     }
 
 }

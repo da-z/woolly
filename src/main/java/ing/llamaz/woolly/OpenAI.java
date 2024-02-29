@@ -106,6 +106,7 @@ public class OpenAI {
                     - If the text is a method or function, you reply with method or function, not the whole file or class context.
                     - When writing class documentation reply with just the documentation header, not the whole file or class.
                     - Do not remove namespace or package declarations, imports from the file if they are in use.
+                    - Simplify repetitive code.
                 
                 ### BEGIN ###
                 %s
@@ -130,28 +131,38 @@ public class OpenAI {
         return extract(response);
     }
 
-    static Pattern fileBlockPattern = Pattern.compile("### BEGIN ###[\n|\\s](.*?)### END ###", Pattern.DOTALL);
-    static Pattern codeBlockPattern = Pattern.compile("```[a-zA-Z0-9\\-]*?[\n|\\s](.*?)```", Pattern.DOTALL);
-    static Pattern snippetBlockPattern = Pattern.compile("`(.*?)`", Pattern.DOTALL);
-
-    private static String extract(Pattern pattern, String text) {
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
+    private static final Pattern fileBlockPattern = Pattern.compile("### BEGIN ###(.*?)### END ###", Pattern.DOTALL);
+    private static final Pattern codeBlockPattern = Pattern.compile("```[a-zA-Z0-9\\-]*?[\n|\\s](.*?)```", Pattern.DOTALL);
+    private static final Pattern unfinishedCodeBlockPattern = Pattern.compile("```[a-zA-Z0-9\\-]*?[\n|\\s](.*)", Pattern.DOTALL);
+    private static final Pattern tripleBacktickBlockPattern = Pattern.compile("```(.*?)```", Pattern.DOTALL);
+    private static final Pattern unfinishedTripleBacktickBlockPattern = Pattern.compile("```(.*?)", Pattern.DOTALL);
+    private static final Pattern singleBacktickBlockPattern = Pattern.compile("`(.*?)`", Pattern.DOTALL);
 
     public static String extract(String text) {
-        String res = extract(fileBlockPattern, text);
-        if (res != null) {
-            return res;
+        return extract(text,
+                fileBlockPattern,
+                codeBlockPattern,
+                unfinishedCodeBlockPattern,
+                tripleBacktickBlockPattern,
+                unfinishedTripleBacktickBlockPattern,
+                singleBacktickBlockPattern);
+    }
+
+    /**
+     * Attempts to extract a match from the provided text using the given patterns, returning the first non-null result.
+     *
+     * @param text     The input text to search for a pattern match in.
+     * @param patterns The array of {@link Pattern} objects to use for matching.
+     * @return The first non-null match found, or null if no matches were found.
+     */
+    public static String extract(String text, Pattern... patterns) {
+        for (Pattern p : patterns) {
+            Matcher matcher = p.matcher(text);
+            if (matcher.find()) {
+                return matcher.group(1).trim();
+            }
         }
-        res = extract(codeBlockPattern, text);
-        if (res != null) {
-            return res;
-        }
-        return extract(snippetBlockPattern, text);
+        return null;
     }
 
 }
