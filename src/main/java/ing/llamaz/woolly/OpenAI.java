@@ -105,6 +105,7 @@ public class OpenAI {
                     - If the text contains instructions, try to follow them, including generating code.
                     - If the text is a method or function, you reply with method or function, not the whole file or class context.
                     - When writing class documentation reply with just the documentation header, not the whole file or class.
+                    - Do not remove namespace or package declarations, imports from the file if they are in use.
                 
                 ### BEGIN ###
                 %s
