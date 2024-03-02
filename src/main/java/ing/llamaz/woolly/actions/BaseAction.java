@@ -84,7 +84,7 @@ public abstract class BaseAction extends AnAction {
                     editor.getDocument().replaceString(
                             editor.getSelectionModel().getSelectionStart(),
                             editor.getSelectionModel().getSelectionEnd(),
-                            newText
+                            newText + (selectedText.endsWith("\n") ? "\n" : "")
                     );
                     reformatSelectedText(e.getProject(), editor);
                 });
