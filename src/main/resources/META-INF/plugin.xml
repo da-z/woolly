@@ -73,4 +73,9 @@
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
     </actions>
+
+    <change-notes><![CDATA[
+        Small improvements
+    ]]></change-notes>
+
 </idea-plugin>
