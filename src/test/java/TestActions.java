@@ -1,5 +1,4 @@
 import ing.llamaz.woolly.OpenAI;
-import ing.llamaz.woolly.actions.BaseAction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -72,7 +71,7 @@ public class TestActions {
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
                         /**
-                         * This class provides functionality to interact with OpenAI's API for text summarization and code extraction.
+                         * This class provides functionality for interacting with the OpenAI API to perform text summarization and code extraction.
                          */
                         """)
         );
@@ -116,11 +115,11 @@ public class TestActions {
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
                         /**
-                         * Checks if a given word is a palindrome.
+                         * Checks if the given word is a palindrome.
                          * A palindrome is a word that reads the same backward as forward.
                          *
-                         * @param word The word to check for palindromeness.
-                         * @return True if the given word is a palindrome, false otherwise.
+                         * @param word The word to check for palindrome property.
+                         * @return True if the word is a palindrome, false otherwise.
                          */
                         """)
         );
@@ -145,7 +144,7 @@ public class TestActions {
                             System.out.println("i = " + i);
                         }""", "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Print numbers from 1 to 6
+                        // Prints numbers from 1 to 6
                         for (int i = 1; i <= 6; i++) {
                             System.out.println("i = " + i);
                         }
@@ -182,7 +181,7 @@ public class TestActions {
                         System.out.println("Sum is: " + sum);
                         """, "java"),
                 equalToIgnoringWhiteSpace("""
-                        // Computes the sum of numbers from 1 to 5
+                        // Calculates the sum of numbers from 1 to 5
                         int sum = 0;
                         for (int i = 1; i <= 5; i++) {
                             sum += i;

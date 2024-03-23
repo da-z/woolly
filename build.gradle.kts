@@ -28,9 +28,7 @@ dependencies {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
     version.set("2023.3.4")
-    type.set("IC") // Target IDE Platform
-
-    plugins.set(listOf(/* Plugin Dependencies */))
+    type.set("IC")
 }
 
 tasks {
@@ -41,7 +39,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("231")
+        sinceBuild.set("222")
+        untilBuild.set("241.*")
     }
 
     shadowJar {

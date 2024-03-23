@@ -77,7 +77,7 @@ public class OpenAI {
     public String woolify(String context, String snippet, String language) {
 
         String sys = """
-                You are an AI plugin that generates, fixes, simplifies, documents or explains %s code.
+                You are an AI plugin that generates, fixes, simplifies, documents or explains %1$s code.
                 If the piece of code contains instructions, do what the comment says.
                 When there are many variants to choose from, you choose the most appropriate response.
                 If your response is not code, write it as code comment(s).
@@ -87,8 +87,9 @@ public class OpenAI {
                 You do not re-write comments unless they contain errors or spelling mistakes.
                 You do not offer explanations for your code decisions.
                 You respond succinctly.
+                You do not include context.
                 Your response is always formatted as either code or comment blocks in the same language you were given.
-                You ALWAYS wrap your response in Markdown fenced code blocks.
+                You ALWAYS wrap your whole response in a simple Markdown triple backtick ```%1$s fenced code block.
                 """.formatted(language);
 
         String user = """
@@ -98,7 +99,7 @@ public class OpenAI {
                 %s
                 ### END ###
                 
-                Please update just the following portion of the text strictly as follows:
+                You will update just the following portion of the text strictly as follows:
                 
                     - Either write code or documentation but never both at the same time.
                     - If the text is a template of javadoc, jsdoc, or similar comment block then fill-in documentation.
@@ -112,6 +113,9 @@ public class OpenAI {
                 ### BEGIN ###
                 %s
                 ### END ###
+                
+                You will respond succinctly.
+                You will not include context.
                 
                 """.formatted(context, snippet);
 
