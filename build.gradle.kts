@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "ing.llamaz"
-version = "0.5.11"
+version = "0.6.0"
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ dependencies {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2023.3.4")
+    version.set("2024.2")
     type.set("IC")
 }
 
@@ -40,7 +40,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("222")
-        untilBuild.set("241.*")
+        untilBuild.set("242.*")
     }
 
     shadowJar {
