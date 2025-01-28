@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "ing.llamaz"
-version = "0.6.0"
+version = "0.7.0"
 
 repositories {
     mavenCentral()
@@ -40,7 +40,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("222")
-        untilBuild.set("242.*")
+        untilBuild.set("243.*")
     }
 
     shadowJar {
